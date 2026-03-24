@@ -37,6 +37,8 @@ from .types import (
     Withdrawal,
     WithdrawalAddress,
     WithdrawalState,
+    to_upbit_pair,
+    to_standard_pair,
 )
 
 __all__ = [
@@ -81,4 +83,6 @@ __all__ = [
     "Deposit",
     "TravelRuleVasp",
     "TravelRuleVerification",
+    "to_upbit_pair",
+    "to_standard_pair",
 ]

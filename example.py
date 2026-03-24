@@ -24,24 +24,24 @@ def test_public_api(client: UpbitClient):
 
     # Trading pairs
     markets = client.list_trading_pairs()
-    krw_markets = [m for m in markets if m.market.startswith("KRW-")]
+    krw_markets = [m for m in markets if m.market.endswith("/KRW")]
     print(f"\nKRW markets: {len(krw_markets)}")
     for m in krw_markets[:5]:
         print(f"  {m.market}: {m.korean_name}")
 
     # BTC, ETH current price
-    tickers = client.list_tickers_by_pairs(["KRW-BTC", "KRW-ETH"])
+    tickers = client.list_tickers_by_pairs(["BTC/KRW", "ETH/KRW"])
     print("\nCurrent prices:")
     for t in tickers:
         print(f"  {t.market}: {t.trade_price:,.0f} KRW ({t.signed_change_rate * 100:+.2f}%)")
 
     # BTC orderbook
-    orderbooks = client.get_orderbook(["KRW-BTC"])
+    orderbooks = client.get_orderbook(["BTC/KRW"])
     ob = orderbooks[0]
     print(f"\nBTC orderbook (best ask: {ob.orderbook_units[0].ask_price:,.0f}, best bid: {ob.orderbook_units[0].bid_price:,.0f})")
 
     # BTC recent trades
-    trades = client.recent_trades("KRW-BTC", count=5)
+    trades = client.recent_trades("BTC/KRW", count=5)
     print("\nBTC recent trades:")
     for t in trades:
         print(f"  {t.trade_time_utc} | {t.trade_price:,.0f} KRW | {t.trade_volume} BTC")

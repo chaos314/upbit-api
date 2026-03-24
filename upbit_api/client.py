@@ -31,6 +31,7 @@ from .types import (
     TravelRuleVerification,
     Withdrawal,
     WithdrawalAddress,
+    to_upbit_pair,
 )
 
 
@@ -59,7 +60,7 @@ class UpbitClient:
         return self._parse_list_payload(raw, model_name="TradingPair", parser=TradingPair.from_dict)
 
     def list_tickers_by_pairs(self, markets: list[str]) -> list[Ticker]:
-        raw = self._request("GET", "/ticker", params={"markets": ",".join(markets)})
+        raw = self._request("GET", "/ticker", params={"markets": ",".join(to_upbit_pair(m) for m in markets)})
         return self._parse_list_payload(raw, model_name="Ticker", parser=Ticker.from_dict)
 
     def list_tickers_by_quote_currencies(
@@ -74,14 +75,14 @@ class UpbitClient:
         return self._parse_list_payload(raw, model_name="Ticker", parser=Ticker.from_dict)
 
     def get_orderbook(self, markets: list[str]) -> list[Orderbook]:
-        raw = self._request("GET", "/orderbook", params={"markets": ",".join(markets)})
+        raw = self._request("GET", "/orderbook", params={"markets": ",".join(to_upbit_pair(m) for m in markets)})
         return self._parse_list_payload(raw, model_name="Orderbook", parser=Orderbook.from_dict)
 
     def list_orderbook_instruments(self, markets: list[str]) -> list[OrderbookInstrument]:
         raw = self._request(
             "GET",
             "/orderbook/instruments",
-            params={"markets": ",".join(markets)},
+            params={"markets": ",".join(to_upbit_pair(m) for m in markets)},
         )
         return self._parse_list_payload(
             raw,
@@ -93,7 +94,7 @@ class UpbitClient:
         raw = self._request(
             "GET",
             "/orderbook/supported_levels",
-            params={"markets": ",".join(markets)},
+            params={"markets": ",".join(to_upbit_pair(m) for m in markets)},
         )
         return self._parse_list_payload(
             raw,
@@ -121,7 +122,7 @@ class UpbitClient:
         count: int | None = None,
         to: str | None = None,
     ) -> list[Candle]:
-        params: dict[str, Any] = {"market": market}
+        params: dict[str, Any] = {"market": to_upbit_pair(market)}
         if count is not None:
             params["count"] = count
         if to is not None:
@@ -182,7 +183,7 @@ class UpbitClient:
         return self._parse_list_payload(raw, model_name="Candle", parser=Candle.from_dict)
 
     def recent_trades(self, market: str, count: int | None = None) -> list[TradeTick]:
-        params: dict[str, Any] = {"market": market}
+        params: dict[str, Any] = {"market": to_upbit_pair(market)}
         if count is not None:
             params["count"] = count
         raw = self._request("GET", "/trades/ticks", params=params)
@@ -200,7 +201,7 @@ class UpbitClient:
     ) -> list[Order]:
         params: dict[str, Any] = {}
         if market is not None:
-            params["market"] = market
+            params["market"] = to_upbit_pair(market)
         if states:
             params["states[]"] = states
         if limit is not None:
@@ -228,7 +229,7 @@ class UpbitClient:
         price: str | None = None,
     ) -> Order:
         body = {
-            "market": market,
+            "market": to_upbit_pair(market),
             "side": side,
             "ord_type": ord_type,
         }
@@ -293,7 +294,7 @@ class UpbitClient:
         )
 
     def get_available_order_info(self, market: str) -> list[dict[str, Any]]:
-        return self._request("GET", "/orders/chance", params={"market": market}, auth=True)
+        return self._request("GET", "/orders/chance", params={"market": to_upbit_pair(market)}, auth=True)
 
     def test_create_order(
         self,
@@ -307,7 +308,7 @@ class UpbitClient:
         smp_type: str | None = None,
     ) -> Order:
         body: dict[str, Any] = {
-            "market": market,
+            "market": to_upbit_pair(market),
             "side": side,
             "ord_type": ord_type,
         }
@@ -342,7 +343,7 @@ class UpbitClient:
     ) -> list[Order]:
         params: dict[str, Any] = {}
         if market is not None:
-            params["market"] = market
+            params["market"] = to_upbit_pair(market)
         if uuids:
             params["uuids[]"] = uuids
         if identifiers:
@@ -373,7 +374,7 @@ class UpbitClient:
     ) -> list[Order]:
         params: dict[str, Any] = {}
         if market is not None:
-            params["market"] = market
+            params["market"] = to_upbit_pair(market)
         if state is not None:
             params["state"] = state
         if states:
@@ -437,9 +438,9 @@ class UpbitClient:
         if order_by is not None:
             params["order_by"] = order_by
         if pairs is not None:
-            params["pairs"] = pairs
+            params["pairs"] = ",".join(to_upbit_pair(p) for p in pairs.split(","))
         if exclude_pairs is not None:
-            params["exclude_pairs"] = exclude_pairs
+            params["exclude_pairs"] = ",".join(to_upbit_pair(p) for p in exclude_pairs.split(","))
         raw = self._request("DELETE", "/orders/open", params=params, auth=True)
         return self._parse_object_payload(
             raw,
@@ -740,7 +741,7 @@ class UpbitClient:
         count: int | None,
         to: str | None,
     ) -> dict[str, Any]:
-        params: dict[str, Any] = {"market": market}
+        params: dict[str, Any] = {"market": to_upbit_pair(market)}
         if count is not None:
             params["count"] = count
         if to is not None:

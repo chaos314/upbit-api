@@ -9,6 +9,22 @@ from typing import Any, Mapping
 from .exceptions import UpbitParseError
 
 
+def to_upbit_pair(pair: str) -> str:
+    """Convert standard pair format to Upbit format. 'BTC/KRW' -> 'KRW-BTC'."""
+    if "/" in pair:
+        base, quote = pair.split("/", 1)
+        return f"{quote}-{base}"
+    return pair
+
+
+def to_standard_pair(upbit_pair: str) -> str:
+    """Convert Upbit pair format to standard format. 'KRW-BTC' -> 'BTC/KRW'."""
+    if "-" in upbit_pair:
+        quote, base = upbit_pair.split("-", 1)
+        return f"{base}/{quote}"
+    return upbit_pair
+
+
 @dataclass(slots=True)
 class RemainingReq:
     group: str | None = None
@@ -116,7 +132,7 @@ class TradingPair:
     @classmethod
     def from_dict(cls, item: Mapping[str, Any]) -> "TradingPair":
         return cls(
-            market=_require_str(item, "market", "TradingPair"),
+            market=to_standard_pair(_require_str(item, "market", "TradingPair")),
             korean_name=_as_str(item.get("korean_name")),
             english_name=_as_str(item.get("english_name")),
             market_event=item.get("market_event") if isinstance(item.get("market_event"), Mapping) else None,
@@ -135,7 +151,7 @@ class Ticker:
     @classmethod
     def from_dict(cls, item: Mapping[str, Any]) -> "Ticker":
         return cls(
-            market=_require_str(item, "market", "Ticker"),
+            market=to_standard_pair(_require_str(item, "market", "Ticker")),
             trade_price=_parse_decimal_like(item.get("trade_price"), "Ticker", "trade_price"),
             signed_change_rate=_parse_decimal_like(
                 item.get("signed_change_rate"),
@@ -166,7 +182,7 @@ class OrderbookInstrument:
     @classmethod
     def from_dict(cls, item: Mapping[str, Any]) -> "OrderbookInstrument":
         return cls(
-            market=_require_str(item, "market", "OrderbookInstrument"),
+            market=to_standard_pair(_require_str(item, "market", "OrderbookInstrument")),
             quote_currency=_as_str(item.get("quote_currency")),
             tick_size=_parse_decimal_like(item.get("tick_size"), "OrderbookInstrument", "tick_size"),
             supported_levels=_parse_decimal_list(
@@ -186,7 +202,7 @@ class SupportedLevels:
     def from_dict(cls, item: Mapping[str, Any]) -> "SupportedLevels":
         levels = _parse_decimal_list(item.get("supported_levels"), "SupportedLevels", "supported_levels")
         return cls(
-            market=_require_str(item, "market", "SupportedLevels"),
+            market=to_standard_pair(_require_str(item, "market", "SupportedLevels")),
             supported_levels=levels or [],
         )
 
@@ -241,7 +257,7 @@ class Orderbook:
             )
 
         return cls(
-            market=_require_str(item, "market", "Orderbook"),
+            market=to_standard_pair(_require_str(item, "market", "Orderbook")),
             timestamp=_safe_int_from_any(item.get("timestamp")),
             total_ask_size=_parse_decimal_like(item.get("total_ask_size"), "Orderbook", "total_ask_size"),
             total_bid_size=_parse_decimal_like(item.get("total_bid_size"), "Orderbook", "total_bid_size"),
@@ -266,7 +282,7 @@ class Candle:
     @classmethod
     def from_dict(cls, item: Mapping[str, Any]) -> "Candle":
         return cls(
-            market=_require_str(item, "market", "Candle"),
+            market=to_standard_pair(_require_str(item, "market", "Candle")),
             candle_date_time_utc=_parse_datetime(
                 item.get("candle_date_time_utc"),
                 model="Candle",
@@ -311,7 +327,7 @@ class TradeTick:
         ask_bid_raw = item.get("ask_bid")
         ask_bid = _parse_order_side(ask_bid_raw) if ask_bid_raw is not None else None
         return cls(
-            market=_require_str(item, "market", "TradeTick"),
+            market=to_standard_pair(_require_str(item, "market", "TradeTick")),
             trade_date_utc=_as_str(item.get("trade_date_utc")),
             trade_time_utc=_as_str(item.get("trade_time_utc")),
             timestamp=_safe_int_from_any(item.get("timestamp")),
@@ -335,7 +351,7 @@ class OrderTrade:
     @classmethod
     def from_dict(cls, item: Mapping[str, Any]) -> "OrderTrade":
         return cls(
-            market=_require_str(item, "market", "OrderTrade"),
+            market=to_standard_pair(_require_str(item, "market", "OrderTrade")),
             uuid=_require_str(item, "uuid", "OrderTrade"),
             price=_parse_decimal(item.get("price"), "OrderTrade", "price", required=True),
             volume=_parse_decimal(item.get("volume"), "OrderTrade", "volume", required=True),
@@ -381,7 +397,7 @@ class Order:
         trades = _parse_trades(item.get("trades"), required=require_trades)
 
         return cls(
-            market=_require_str(item, "market", "Order"),
+            market=to_standard_pair(_require_str(item, "market", "Order")),
             uuid=_require_str(item, "uuid", "Order"),
             side=_parse_order_side(item.get("side")),
             ord_type=_parse_order_type(item.get("ord_type")),
@@ -453,7 +469,7 @@ class CancelOrderRef:
     def from_dict(cls, item: Mapping[str, Any]) -> "CancelOrderRef":
         return cls(
             uuid=_require_str(item, "uuid", "CancelOrderRef"),
-            market=_require_str(item, "market", "CancelOrderRef"),
+            market=to_standard_pair(_require_str(item, "market", "CancelOrderRef")),
             identifier=_as_str(item.get("identifier")),
         )
 

@@ -11,6 +11,26 @@ Unofficial Python wrapper for the Upbit Open API (REST).
 - Upbit query_hash generation rules for GET/DELETE/POST
 - Remaining-Req header parsing for rate-limit awareness
 - Typed custom exceptions for API/auth/rate-limit errors
+- Standard market pair format (`BTC/KRW`) — automatically converted to/from Upbit's native `KRW-BTC` format
+
+## Market Pair Format
+
+This wrapper uses the standard `BASE/QUOTE` format used by most exchanges worldwide:
+
+| This wrapper | Upbit native | Meaning |
+| --- | --- | --- |
+| `BTC/KRW` | `KRW-BTC` | Trade BTC with KRW |
+| `ETH/BTC` | `BTC-ETH` | Trade ETH with BTC |
+| `BTC/USDT` | `USDT-BTC` | Trade BTC with USDT |
+
+The conversion is handled automatically. You can also use `to_upbit_pair()` and `to_standard_pair()` helpers directly:
+
+```python
+from upbit_api import to_upbit_pair, to_standard_pair
+
+to_upbit_pair("BTC/KRW")       # "KRW-BTC"
+to_standard_pair("KRW-BTC")    # "BTC/KRW"
+```
 
 ## Install
 
@@ -29,20 +49,20 @@ client = UpbitClient()
 markets = client.list_trading_pairs()
 print(markets[:3])
 
-print(client.list_tickers_by_pairs(["KRW-BTC", "KRW-ETH"]))
+print(client.list_tickers_by_pairs(["BTC/KRW", "ETH/KRW"]))
 print(client.list_tickers_by_quote_currencies(["KRW", "BTC"]))
 
-print(client.list_second_candles("KRW-BTC", count=10))
-print(client.list_minute_candles("KRW-BTC", unit=1, count=10))
-print(client.list_day_candles("KRW-BTC", count=10, converting_price_unit="KRW"))
-print(client.list_week_candles("KRW-BTC", count=10))
-print(client.list_month_candles("KRW-BTC", count=10))
-print(client.list_year_candles("KRW-BTC", count=5))
+print(client.list_second_candles("BTC/KRW", count=10))
+print(client.list_minute_candles("BTC/KRW", unit=1, count=10))
+print(client.list_day_candles("BTC/KRW", count=10, converting_price_unit="KRW"))
+print(client.list_week_candles("BTC/KRW", count=10))
+print(client.list_month_candles("BTC/KRW", count=10))
+print(client.list_year_candles("BTC/KRW", count=5))
 
-print(client.get_orderbook(["KRW-BTC", "KRW-ETH"]))
-print(client.list_orderbook_instruments(["KRW-BTC", "KRW-ETH"]))
-print(client.list_orderbook_supported_levels(["KRW-BTC", "KRW-ETH"]))
-print(client.recent_trades("KRW-BTC", count=20))
+print(client.get_orderbook(["BTC/KRW", "ETH/KRW"]))
+print(client.list_orderbook_instruments(["BTC/KRW", "ETH/KRW"]))
+print(client.list_orderbook_supported_levels(["BTC/KRW", "ETH/KRW"]))
+print(client.recent_trades("BTC/KRW", count=20))
 ```
 
 ## Private API Example
@@ -71,7 +91,7 @@ print(balances[0].currency, balances[0].balance)
 
 # Order
 order = client.create_order(
-    market="KRW-BTC",
+    market="BTC/KRW",
     side="bid",
     ord_type="limit",
     volume="0.001",
@@ -89,16 +109,16 @@ print(api_keys[0].access_key, api_keys[0].expire_at)
 
 # Order
 order_preview = client.test_create_order(
-    "KRW-BTC", "bid", "limit", volume="0.001", price="50000000"
+    "BTC/KRW", "bid", "limit", volume="0.001", price="50000000"
 )
 print(order_preview.uuid)
 
 # list[Order]
-closed = client.list_closed_orders(market="KRW-BTC", states=["done", "cancel"], limit=100)
+closed = client.list_closed_orders(market="BTC/KRW", states=["done", "cancel"], limit=100)
 print(closed[0].uuid if closed else "no closed orders")
 
 # BatchCancelResult
-batch_result = client.batch_cancel_orders(cancel_side="all", count=20, pairs="KRW-BTC,KRW-ETH")
+batch_result = client.batch_cancel_orders(cancel_side="all", count=20, pairs="BTC/KRW,ETH/KRW")
 print(batch_result.success.count, batch_result.failed.count)
 
 # list[WithdrawalAddress]
@@ -208,7 +228,7 @@ from upbit_api import UpbitClient, UpbitAPIError, UpbitParseError, UpbitRateLimi
 client = UpbitClient()
 
 try:
-    client.list_tickers_by_pairs(["KRW-BTC"])
+    client.list_tickers_by_pairs(["BTC/KRW"])
 except UpbitRateLimitError as e:
     print("rate limit:", e)
 except UpbitParseError as e:
