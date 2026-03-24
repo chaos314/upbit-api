@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "upbit-api"
-version = "0.1.0"
+version = "0.1.1"
 description = "Unofficial Python wrapper for the Upbit Open API (REST)"
 readme = "README.md"
 license = "MIT"
@@ -30,9 +30,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/bitkini/upbit-api"
-Repository = "https://github.com/bitkini/upbit-api"
-Issues = "https://github.com/bitkini/upbit-api/issues"
+Homepage = "https://github.com/chaos314/upbit-api"
+Repository = "https://github.com/chaos314/upbit-api"
+Issues = "https://github.com/chaos314/upbit-api/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["upbit_api"]
