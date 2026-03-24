@@ -108,8 +108,8 @@ api_keys = client.list_api_keys()
 print(api_keys[0].access_key, api_keys[0].expire_at)
 
 # Order
-order_preview = client.test_create_order(
-    "BTC/KRW", "bid", "limit", volume="0.001", price="50000000"
+order_preview = client.create_order(
+    "BTC/KRW", "bid", "limit", volume="0.001", price="50000000", test=True
 )
 print(order_preview.uuid)
 
@@ -141,7 +141,7 @@ print(vasps[0].vasp_name if vasps else "no vasp")
 `get_service_status()` returns `list[ServiceStatus]` and maps status values to enums.
 `list_api_keys()` returns `list[ApiKeyInfo]` and parses `expire_at` into `datetime`.
 `get_balances()` returns `list[AccountBalance]` with numeric fields as `Decimal`.
-`get_order()`, `get_open_orders()`, `create_order()`, `cancel_order()`, and `test_create_order()` return typed `Order`.
+`get_order()`, `get_open_orders()`, `create_order()`, and `cancel_order()` return typed `Order`. Use `create_order(..., test=True)` for dry-run.
 `list_orders_by_ids()` and `list_closed_orders()` return `list[Order]`.
 `cancel_orders_by_ids()` and `batch_cancel_orders()` return `BatchCancelResult`.
 `list_withdrawal_addresses()` returns `list[WithdrawalAddress]`.
@@ -171,7 +171,7 @@ Quotation endpoints return typed models.
 | `get_service_status()` | `list[ServiceStatus]` |
 | `list_api_keys()` | `list[ApiKeyInfo]` |
 | `get_balances()` | `list[AccountBalance]` |
-| `get_order()`, `get_open_orders()`, `create_order()`, `cancel_order()`, `test_create_order()` | `Order` |
+| `get_order()`, `get_open_orders()`, `create_order()`, `cancel_order()` | `Order` |
 | `list_orders_by_ids()`, `list_closed_orders()` | `list[Order]` |
 | `cancel_orders_by_ids()`, `batch_cancel_orders()` | `BatchCancelResult` |
 | `list_withdrawal_addresses()` | `list[WithdrawalAddress]` |

@@ -183,8 +183,12 @@ class UpbitClient:
         ord_type: str,
         volume: str | None = None,
         price: str | None = None,
+        identifier: str | None = None,
+        time_in_force: str | None = None,
+        smp_type: str | None = None,
+        test: bool = False,
     ) -> Order:
-        body = {
+        body: dict[str, Any] = {
             "market": to_upbit_pair(market),
             "side": side,
             "ord_type": ord_type,
@@ -193,7 +197,14 @@ class UpbitClient:
             body["volume"] = volume
         if price is not None:
             body["price"] = price
-        raw = self._request("POST", "/orders", json_body=body, auth=True)
+        if identifier is not None:
+            body["identifier"] = identifier
+        if time_in_force is not None:
+            body["time_in_force"] = time_in_force
+        if smp_type is not None:
+            body["smp_type"] = smp_type
+        path = "/orders/test" if test else "/orders"
+        raw = self._request("POST", path, json_body=body, auth=True)
         strict, require_trades = self._resolve_order_parse_options(self.parse_policy.create_order_level)
         return self._parse_object_payload(
             raw,
@@ -251,44 +262,6 @@ class UpbitClient:
 
     def get_available_order_info(self, market: str) -> list[dict[str, Any]]:
         return self._request("GET", "/orders/chance", params={"market": to_upbit_pair(market)}, auth=True)
-
-    def test_create_order(
-        self,
-        market: str,
-        side: str,
-        ord_type: str,
-        volume: str | None = None,
-        price: str | None = None,
-        identifier: str | None = None,
-        time_in_force: str | None = None,
-        smp_type: str | None = None,
-    ) -> Order:
-        body: dict[str, Any] = {
-            "market": to_upbit_pair(market),
-            "side": side,
-            "ord_type": ord_type,
-        }
-        if volume is not None:
-            body["volume"] = volume
-        if price is not None:
-            body["price"] = price
-        if identifier is not None:
-            body["identifier"] = identifier
-        if time_in_force is not None:
-            body["time_in_force"] = time_in_force
-        if smp_type is not None:
-            body["smp_type"] = smp_type
-        raw = self._request("POST", "/orders/test", json_body=body, auth=True)
-        strict, require_trades = self._resolve_order_parse_options(self.parse_policy.create_order_level)
-        return self._parse_object_payload(
-            raw,
-            model_name="Order",
-            parser=lambda item: Order.from_dict(
-                item,
-                strict=strict,
-                require_trades=require_trades,
-            ),
-        )
 
     def list_orders_by_ids(
         self,
