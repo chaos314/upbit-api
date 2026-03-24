@@ -27,5 +27,8 @@ dist/
 .vscode/
 .idea/
 
+# Environment variables
+.env
+
 # OS files
 .DS_Store

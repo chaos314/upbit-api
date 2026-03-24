@@ -937,7 +937,7 @@ def _parse_order_side(value: Any) -> OrderSide:
     if not isinstance(value, str):
         raise UpbitParseError("Order", "side", "must be a string")
     try:
-        return OrderSide(value)
+        return OrderSide(value.lower())
     except ValueError as exc:
         raise UpbitParseError("Order", "side", f"unknown side: {value}") from exc
 

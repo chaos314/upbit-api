@@ -816,7 +816,7 @@ class UpbitClient:
 
         self.last_remaining_req = RemainingReq.parse(response.headers.get("Remaining-Req"))
 
-        if not response.ok:
+        if not response.is_success:
             self._raise_api_error(response)
 
         if response.status_code == 204 or not response.content:
