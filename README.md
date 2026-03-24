@@ -35,9 +35,7 @@ to_standard_pair("KRW-BTC")    # "BTC/KRW"
 ## Install
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+pip install upbit-api
 ```
 
 ## Quick Start
