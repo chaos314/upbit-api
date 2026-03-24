@@ -102,84 +102,40 @@ class UpbitClient:
             parser=SupportedLevels.from_dict,
         )
 
-    def list_second_candles(
-        self,
-        market: str,
-        count: int | None = None,
-        to: str | None = None,
-    ) -> list[Candle]:
-        raw = self._request(
-            "GET",
-            "/candles/seconds",
-            params=self._build_candle_params(market=market, count=count, to=to),
-        )
-        return self._parse_list_payload(raw, model_name="Candle", parser=Candle.from_dict)
+    _INTERVAL_MAP: dict[str, tuple[str, int | None]] = {
+        "1s": ("/candles/seconds", None),
+        "1m": ("/candles/minutes/1", None),
+        "3m": ("/candles/minutes/3", None),
+        "5m": ("/candles/minutes/5", None),
+        "10m": ("/candles/minutes/10", None),
+        "15m": ("/candles/minutes/15", None),
+        "30m": ("/candles/minutes/30", None),
+        "1h": ("/candles/minutes/60", None),
+        "4h": ("/candles/minutes/240", None),
+        "1d": ("/candles/days", None),
+        "1w": ("/candles/weeks", None),
+        "1M": ("/candles/months", None),
+        "1y": ("/candles/years", None),
+    }
 
-    def list_minute_candles(
+    def get_candles(
         self,
         market: str,
-        unit: int,
-        count: int | None = None,
-        to: str | None = None,
-    ) -> list[Candle]:
-        params: dict[str, Any] = {"market": to_upbit_pair(market)}
-        if count is not None:
-            params["count"] = count
-        if to is not None:
-            params["to"] = to
-        raw = self._request("GET", f"/candles/minutes/{unit}", params=params)
-        return self._parse_list_payload(raw, model_name="Candle", parser=Candle.from_dict)
-
-    def list_day_candles(
-        self,
-        market: str,
+        interval: str = "1d",
         count: int | None = None,
         to: str | None = None,
         converting_price_unit: str | None = None,
     ) -> list[Candle]:
+        entry = self._INTERVAL_MAP.get(interval)
+        if entry is None:
+            valid = ", ".join(self._INTERVAL_MAP)
+            raise ValueError(f"Unsupported interval: {interval!r}. Valid intervals: {valid}")
+
+        path = entry[0]
         params = self._build_candle_params(market=market, count=count, to=to)
-        if converting_price_unit is not None:
+        if converting_price_unit is not None and interval == "1d":
             params["converting_price_unit"] = converting_price_unit
-        raw = self._request("GET", "/candles/days", params=params)
-        return self._parse_list_payload(raw, model_name="Candle", parser=Candle.from_dict)
-
-    def list_week_candles(
-        self,
-        market: str,
-        count: int | None = None,
-        to: str | None = None,
-    ) -> list[Candle]:
-        raw = self._request(
-            "GET",
-            "/candles/weeks",
-            params=self._build_candle_params(market=market, count=count, to=to),
-        )
-        return self._parse_list_payload(raw, model_name="Candle", parser=Candle.from_dict)
-
-    def list_month_candles(
-        self,
-        market: str,
-        count: int | None = None,
-        to: str | None = None,
-    ) -> list[Candle]:
-        raw = self._request(
-            "GET",
-            "/candles/months",
-            params=self._build_candle_params(market=market, count=count, to=to),
-        )
-        return self._parse_list_payload(raw, model_name="Candle", parser=Candle.from_dict)
-
-    def list_year_candles(
-        self,
-        market: str,
-        count: int | None = None,
-        to: str | None = None,
-    ) -> list[Candle]:
-        raw = self._request(
-            "GET",
-            "/candles/years",
-            params=self._build_candle_params(market=market, count=count, to=to),
-        )
+        raw = self._request("GET", path, params=params)
         return self._parse_list_payload(raw, model_name="Candle", parser=Candle.from_dict)
 
     def recent_trades(self, market: str, count: int | None = None) -> list[TradeTick]:

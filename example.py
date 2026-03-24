@@ -40,6 +40,12 @@ def test_public_api(client: UpbitClient):
     ob = orderbooks[0]
     print(f"\nBTC orderbook (best ask: {ob.orderbook_units[0].ask_price:,.0f}, best bid: {ob.orderbook_units[0].bid_price:,.0f})")
 
+    # BTC candles
+    candles = client.get_candles("BTC/KRW", interval="1d", count=3)
+    print("\nBTC daily candles:")
+    for c in candles:
+        print(f"  {c.candle_date_time_utc} | O:{c.opening_price:,.0f} H:{c.high_price:,.0f} L:{c.low_price:,.0f} C:{c.trade_price:,.0f}")
+
     # BTC recent trades
     trades = client.recent_trades("BTC/KRW", count=5)
     print("\nBTC recent trades:")

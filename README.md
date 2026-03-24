@@ -52,12 +52,12 @@ print(markets[:3])
 print(client.list_tickers_by_pairs(["BTC/KRW", "ETH/KRW"]))
 print(client.list_tickers_by_quote_currencies(["KRW", "BTC"]))
 
-print(client.list_second_candles("BTC/KRW", count=10))
-print(client.list_minute_candles("BTC/KRW", unit=1, count=10))
-print(client.list_day_candles("BTC/KRW", count=10, converting_price_unit="KRW"))
-print(client.list_week_candles("BTC/KRW", count=10))
-print(client.list_month_candles("BTC/KRW", count=10))
-print(client.list_year_candles("BTC/KRW", count=5))
+print(client.get_candles("BTC/KRW", interval="1s", count=10))
+print(client.get_candles("BTC/KRW", interval="1m", count=10))
+print(client.get_candles("BTC/KRW", interval="1d", count=10, converting_price_unit="KRW"))
+print(client.get_candles("BTC/KRW", interval="1w", count=10))
+print(client.get_candles("BTC/KRW", interval="1M", count=10))
+print(client.get_candles("BTC/KRW", interval="1y", count=5))
 
 print(client.get_orderbook(["BTC/KRW", "ETH/KRW"]))
 print(client.list_orderbook_instruments(["BTC/KRW", "ETH/KRW"]))
@@ -161,7 +161,7 @@ Quotation endpoints return typed models.
 | `get_orderbook()` | `list[Orderbook]` |
 | `list_orderbook_instruments()` | `list[OrderbookInstrument]` |
 | `list_orderbook_supported_levels()` | `list[SupportedLevels]` |
-| `list_second_candles()`, `list_minute_candles()`, `list_day_candles()`, `list_week_candles()`, `list_month_candles()`, `list_year_candles()` | `list[Candle]` |
+| `get_candles()` | `list[Candle]` |
 | `recent_trades()` | `list[TradeTick]` |
 
 ## Exchange Return Type Map
