@@ -1,31 +1,31 @@
-**English** | [한국어](README.ko.md)
+[English](README.md) | **한국어**
 
 # upbit-api
 
-Unofficial Python wrapper for the Upbit Open API (REST).
+Upbit Open API (REST) 비공식 Python 래퍼입니다.
 
-> Implemented against **Upbit Open API v1.6.1**.
+> **Upbit Open API v1.6.1** 기준으로 구현되었습니다.
 
-## Features
+## 주요 기능
 
-- Quotation API (public) endpoints
-- Exchange API (private) endpoints with JWT auth (HS512)
-- Upbit query_hash generation rules for GET/DELETE/POST
-- Remaining-Req header parsing for rate-limit awareness
-- Typed custom exceptions for API/auth/rate-limit errors
-- Standard market pair format (`BTC/KRW`) — automatically converted to/from Upbit's native `KRW-BTC` format
+- Quotation API (공개) 엔드포인트
+- Exchange API (비공개) 엔드포인트 — JWT 인증 (HS512)
+- Upbit query_hash 생성 규칙 (GET/DELETE/POST)
+- Remaining-Req 헤더 파싱을 통한 요청 제한 관리
+- API/인증/요청 제한 오류에 대한 타입 지정 커스텀 예외
+- 표준 마켓 페어 형식 (`BTC/KRW`) — Upbit 자체 형식 `KRW-BTC`와 자동 변환
 
-## Market Pair Format
+## 마켓 페어 형식
 
-This wrapper uses the standard `BASE/QUOTE` format used by most exchanges worldwide:
+이 래퍼는 전 세계 대부분의 거래소에서 사용하는 `BASE/QUOTE` 표준 형식을 사용합니다:
 
-| This wrapper | Upbit native | Meaning |
+| 이 래퍼 | Upbit 원본 | 의미 |
 | --- | --- | --- |
-| `BTC/KRW` | `KRW-BTC` | Trade BTC with KRW |
-| `ETH/BTC` | `BTC-ETH` | Trade ETH with BTC |
-| `BTC/USDT` | `USDT-BTC` | Trade BTC with USDT |
+| `BTC/KRW` | `KRW-BTC` | KRW로 BTC 거래 |
+| `ETH/BTC` | `BTC-ETH` | BTC로 ETH 거래 |
+| `BTC/USDT` | `USDT-BTC` | USDT로 BTC 거래 |
 
-The conversion is handled automatically. You can also use `to_upbit_pair()` and `to_standard_pair()` helpers directly:
+변환은 자동으로 처리됩니다. `to_upbit_pair()`와 `to_standard_pair()` 헬퍼를 직접 사용할 수도 있습니다:
 
 ```python
 from upbit_api import to_upbit_pair, to_standard_pair
@@ -34,13 +34,13 @@ to_upbit_pair("BTC/KRW")       # "KRW-BTC"
 to_standard_pair("KRW-BTC")    # "BTC/KRW"
 ```
 
-## Install
+## 설치
 
 ```bash
 pip install upbit-api
 ```
 
-## Quick Start
+## 빠른 시작
 
 ```python
 from upbit_api import ParsePolicy, ParseStrictLevel, UpbitClient
@@ -65,7 +65,7 @@ print(client.list_orderbook_supported_levels(["BTC/KRW", "ETH/KRW"]))
 print(client.recent_trades("BTC/KRW", count=20))
 ```
 
-## Private API Example
+## 비공개 API 예제
 
 ```python
 from upbit_api import (
@@ -138,23 +138,23 @@ vasps = client.list_travel_rule_vasps()
 print(vasps[0].vasp_name if vasps else "no vasp")
 ```
 
-`get_service_status()` returns `list[ServiceStatus]` and maps status values to enums.
-`list_api_keys()` returns `list[ApiKeyInfo]` and parses `expire_at` into `datetime`.
-`get_balances()` returns `list[AccountBalance]` with numeric fields as `Decimal`.
-`get_order()`, `get_open_orders()`, `create_order()`, and `cancel_order()` return typed `Order`. Use `create_order(..., test=True)` for dry-run.
-`list_orders_by_ids()` and `list_closed_orders()` return `list[Order]`.
-`cancel_orders_by_ids()` and `batch_cancel_orders()` return `BatchCancelResult`.
-`list_withdrawal_addresses()` returns `list[WithdrawalAddress]`.
-`withdraw_coin()`, `withdraw_krw()`, `get_withdrawal()`, `list_withdrawals()`, and `cancel_withdrawal()` return typed `Withdrawal`/`list[Withdrawal]`.
-`get_available_deposit_info()`, `create_deposit_address()`, `get_deposit_address()`, `list_deposit_addresses()`, `deposit_krw()`, `get_deposit()`, and `list_deposits()` return typed deposit models.
-`list_travel_rule_vasps()`, `verify_travel_rule_by_uuid()`, and `verify_travel_rule_by_txid()` return typed travel rule models.
-`parse_policy` can control strict parsing level per order endpoint.
+`get_service_status()`는 `list[ServiceStatus]`를 반환하며 상태 값을 enum으로 매핑합니다.
+`list_api_keys()`는 `list[ApiKeyInfo]`를 반환하며 `expire_at`을 `datetime`으로 파싱합니다.
+`get_balances()`는 `list[AccountBalance]`를 반환하며 숫자 필드는 `Decimal` 타입입니다.
+`get_order()`, `get_open_orders()`, `create_order()`, `cancel_order()`는 타입 지정된 `Order`를 반환합니다. `create_order(..., test=True)`로 dry-run 가능합니다.
+`list_orders_by_ids()`와 `list_closed_orders()`는 `list[Order]`를 반환합니다.
+`cancel_orders_by_ids()`와 `batch_cancel_orders()`는 `BatchCancelResult`를 반환합니다.
+`list_withdrawal_addresses()`는 `list[WithdrawalAddress]`를 반환합니다.
+`withdraw_coin()`, `withdraw_krw()`, `get_withdrawal()`, `list_withdrawals()`, `cancel_withdrawal()`은 타입 지정된 `Withdrawal`/`list[Withdrawal]`을 반환합니다.
+`get_available_deposit_info()`, `create_deposit_address()`, `get_deposit_address()`, `list_deposit_addresses()`, `deposit_krw()`, `get_deposit()`, `list_deposits()`는 타입 지정된 입금 모델을 반환합니다.
+`list_travel_rule_vasps()`, `verify_travel_rule_by_uuid()`, `verify_travel_rule_by_txid()`는 타입 지정된 트래블룰 모델을 반환합니다.
+`parse_policy`로 주문 엔드포인트별 파싱 엄격도를 제어할 수 있습니다.
 
-## Quotation Return Type Map
+## Quotation 반환 타입 매핑
 
-Quotation endpoints return typed models.
+Quotation 엔드포인트는 타입 지정된 모델을 반환합니다.
 
-| Method(s) | Return Type |
+| 메서드 | 반환 타입 |
 | --- | --- |
 | `list_trading_pairs()` | `list[TradingPair]` |
 | `list_tickers_by_pairs()`, `list_tickers_by_quote_currencies()` | `list[Ticker]` |
@@ -164,9 +164,9 @@ Quotation endpoints return typed models.
 | `get_candles()` | `list[Candle]` |
 | `recent_trades()` | `list[TradeTick]` |
 
-## Exchange Return Type Map
+## Exchange 반환 타입 매핑
 
-| Method(s) | Return Type |
+| 메서드 | 반환 타입 |
 | --- | --- |
 | `get_service_status()` | `list[ServiceStatus]` |
 | `list_api_keys()` | `list[ApiKeyInfo]` |
@@ -186,9 +186,9 @@ Quotation endpoints return typed models.
 | `list_travel_rule_vasps()` | `list[TravelRuleVasp]` |
 | `verify_travel_rule_by_uuid()`, `verify_travel_rule_by_txid()` | `TravelRuleVerification` |
 
-## Package Root Imports
+## 패키지 루트 임포트
 
-You can use both styles:
+두 가지 스타일 모두 사용 가능합니다:
 
 ```python
 import upbit_api
@@ -212,15 +212,15 @@ result: TravelRuleVerification = client.verify_travel_rule_by_uuid(
 print(result.verification_result)
 ```
 
-The package root exports both Quotation and Exchange typed models, including:
+패키지 루트에서 Quotation과 Exchange 타입 모델을 모두 export합니다:
 `TradingPair`, `Ticker`, `Orderbook`, `OrderbookInstrument`, `SupportedLevels`,
 `Candle`, `TradeTick`, `Order`, `OrderTrade`, `Withdrawal`, `WithdrawalAddress`,
 `Deposit`, `DepositAddress`, `DepositAddressGeneration`, `DepositAvailability`,
 `TravelRuleVasp`, `TravelRuleVerification`, `BatchCancelResult`, `OrderSide`,
 `OrderType`, `OrderState`, `TimeInForce`, `SmpType`, `TradeTrend`, `TransferType`,
-`WithdrawalState`, and `DepositState`.
+`WithdrawalState`, `DepositState`.
 
-## Error Handling
+## 에러 처리
 
 ```python
 from upbit_api import UpbitClient, UpbitAPIError, UpbitParseError, UpbitRateLimitError
@@ -230,24 +230,24 @@ client = UpbitClient()
 try:
     client.list_tickers_by_pairs(["BTC/KRW"])
 except UpbitRateLimitError as e:
-    print("rate limit:", e)
+    print("요청 제한:", e)
 except UpbitParseError as e:
-    print("parse error:", e)
+    print("파싱 오류:", e)
 except UpbitAPIError as e:
-    print("api error:", e)
+    print("API 오류:", e)
 ```
 
-## Tests
+## 테스트
 
 ```bash
 pytest -q
 ```
 
-## Notes
+## 참고 사항
 
-- Private API calls require API key permissions and registered caller IP.
-- Each authenticated request uses a unique nonce.
-- `client.last_remaining_req` stores the latest parsed `Remaining-Req` value.
-- This wrapper currently focuses on REST APIs.
-- Quotation REST endpoints in docs are fully implemented in `UpbitClient`.
-- Exchange REST endpoints in docs are fully implemented in `UpbitClient`.
+- 비공개 API 호출에는 API 키 권한과 등록된 IP가 필요합니다.
+- 각 인증 요청은 고유한 nonce를 사용합니다.
+- `client.last_remaining_req`에 가장 최근 파싱된 `Remaining-Req` 값이 저장됩니다.
+- 이 래퍼는 현재 REST API만 구현됐습니다.
+- 문서에 있는 Quotation REST 엔드포인트가 `UpbitClient`에 모두 구현되어 있습니다.
+- 문서에 있는 Exchange REST 엔드포인트가 `UpbitClient`에 모두 구현되어 있습니다.

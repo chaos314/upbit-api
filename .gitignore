@@ -32,3 +32,9 @@ dist/
 
 # OS files
 .DS_Store
+
+# AI generated files
+CLAUDE.md
+
+# Report files
+REPORT.md
